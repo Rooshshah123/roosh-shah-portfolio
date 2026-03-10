@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roosh Shah</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --black: #0a0a0a;
+        --white: #f2f0eb;
+        --red: #d4001a;
+        --gray: #888;
+        --light-gray: #e8e6e1;
+      }
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+
+      html { scroll-behavior: smooth; }
+
+      body {
+        background: var(--white);
+        color: var(--black);
+        font-family: 'DM Mono', monospace;
+        font-weight: 300;
+        cursor: none;
+        overflow-x: hidden;
+      }
+
+      /* ── cursor ── */
+      #cur {
+        position: fixed;
+        width: 10px; height: 10px;
+        background: var(--red);
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        transition: transform 0.15s ease;
+        mix-blend-mode: multiply;
+      }
+      #cur.big { transform: scale(5); background: var(--red); }
+
+      /* ── progress bar ── */
+      #progress {
+        position: fixed; top: 0; left: 0;
+        height: 2px;
+        background: var(--red);
+        z-index: 1000;
+        width: 0%;
+        transition: width 0.1s linear;
+      }
+
+      /* ── nav ── */
+      nav {
+        position: fixed; top: 0; left: 0; right: 0;
+        z-index: 100;
+        padding: 28px 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        mix-blend-mode: multiply;
+      }
+      .logo {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.4rem;
+        letter-spacing: 4px;
+        color: var(--black);
+        text-decoration: none;
+      }
+      .logo em { color: var(--red); font-style: normal; }
+      nav ul { list-style: none; display: flex; gap: 40px; }
+      nav a {
+        font-size: 0.65rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gray);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      nav a:hover { color: var(--red); }
+
+      /* ── sections ── */
+      section { 
+        padding: 140px 60px 100px; 
+        box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      section:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      }
+
+      /* ── HERO ── */
+      #hero {
+        min-height: 100vh;
+        display: grid;
+        grid-template-rows: 1fr auto;
+        padding-top: 100px;
+        border-bottom: 1px solid var(--black);
+      }
+
+      .hero-main {
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        padding-bottom: 60px;
+      }
+
+      .hero-name {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: clamp(6rem, 18vw, 20rem);
+        line-height: 0.88;
+        letter-spacing: -2px;
+        color: var(--black);
+        overflow: hidden;
+      }
+      .hero-name .line {
+        display: block;
+        transform: translateY(110%);
+        animation: slide-up 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      .hero-name .line:nth-child(1) { animation-delay: 0.1s; }
+      .hero-name .line:nth-child(2) { animation-delay: 0.2s; color: var(--red); }
+
+      @keyframes slide-up {
+        to { transform: translateY(0); }
+      }
+
+      .hero-footer {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        border-top: 1px solid var(--light-gray);
+        padding-top: 28px;
+        opacity: 0;
+        animation: fade-in 0.6s ease 0.8s forwards;
+      }
+      @keyframes fade-in { to { opacity: 1; } }
+
+      .hero-meta {
+        font-size: 0.7rem;
+        letter-spacing: 2px;
+        line-height: 2;
+        color: var(--gray);
+        text-transform: uppercase;
+      }
+      .hero-meta strong {
+        display: block;
+        color: var(--black);
+        font-weight: 400;
+        margin-bottom: 4px;
+      }
+      .hero-meta a {
+        color: var(--red);
+        text-decoration: none;
+      }
+      .hero-meta a:hover { text-decoration: underline; }
+
+      /* ── section header ── */
+      .s-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        border-bottom: 1px solid var(--black);
+        padding-bottom: 16px;
+        margin-bottom: 60px;
+      }
+      .s-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: clamp(3rem, 7vw, 7rem);
+        letter-spacing: 2px;
+        line-height: 1;
+      }
+      .s-num {
+        font-size: 0.65rem;
+        letter-spacing: 4px;
+        color: var(--red);
+        text-transform: uppercase;
+      }
+
+      /* ── reveal ── */
+      .reveal {
+        opacity: 0;
+        transform: translateY(24px);
+        transition: opacity 0.7s ease, transform 0.7s ease;
+      }
+      .reveal.on { opacity: 1; transform: translateY(0); }
+
+      /* ── ABOUT ── */
+      #about { border-bottom: 1px solid var(--black); }
+
+      .about-grid {
+        display: grid;
+        grid-template-columns: 1fr 2fr;
+        gap: 80px;
+        align-items: start;
+      }
+
+      .sidebar-block {
+        border-top: 1px solid var(--light-gray);
+        padding: 20px 0;
+      }
+      .sidebar-block:first-child { border-top: none; }
+      .sidebar-label {
+        font-size: 0.6rem;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--red);
+        margin-bottom: 10px;
+      }
+      .sidebar-val {
+        font-size: 0.8rem;
+        color: var(--black);
+        line-height: 1.8;
+      }
+
+      .about-body {
+        font-size: 1.05rem;
+        line-height: 1.9;
+        color: var(--black);
+      }
+      .about-body p { margin-bottom: 24px; }
+      .about-body p:last-child { margin-bottom: 0; }
+      .about-body em { color: var(--red); font-style: normal; }
+
+      /* ── EXPERIENCE ── */
+      #experience { border-bottom: 1px solid var(--black); }
+
+      .exp-item {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 60px;
+        padding: 44px 0;
+        border-top: 1px solid var(--light-gray);
+        transition: background 0.2s;
+      }
+      .exp-item:first-child { border-top: none; }
+
+      .exp-period {
+        font-size: 0.65rem;
+        letter-spacing: 2px;
+        color: var(--gray);
+        text-transform: uppercase;
+        padding-top: 4px;
+        line-height: 1.8;
+      }
+      .exp-period .company { color: var(--red); display: block; margin-bottom: 4px; font-size: 0.7rem; }
+
+      .exp-role {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 2rem;
+        letter-spacing: 2px;
+        margin-bottom: 16px;
+        color: var(--black);
+      }
+      .exp-bullets {
+        list-style: none;
+        font-size: 0.8rem;
+        line-height: 2;
+        color: #444;
+      }
+      .exp-bullets li {
+        padding-left: 16px;
+        position: relative;
+        margin-bottom: 4px;
+      }
+      .exp-bullets li::before {
+        content: '—';
+        position: absolute; left: 0;
+        color: var(--red);
+      }
+
+      /* ── PROJECTS ── */
+      #projects { border-bottom: 1px solid var(--black); }
+
+      .projects-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2px;
+      }
+
+      .proj-card {
+        border: 1px solid var(--light-gray);
+        padding: 40px;
+        position: relative;
+        overflow: hidden;
+        transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+        cursor: pointer;
+        text-decoration: none;
+        display: block;
+        color: inherit;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .proj-card:hover {
+        box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        transform: translateY(-5px);
+      }
+      .proj-link {
+        position: relative; z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.6rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gray);
+        margin-top: 20px;
+        transition: color 0.3s;
+      }
+      .proj-card:hover .proj-link { color: var(--white); }
+      .proj-card.no-link .proj-link { display: none; }
+      .proj-card::after {
+        content: '';
+        position: absolute; bottom: 0; left: 0;
+        width: 100%; height: 0;
+        background: var(--black);
+        transition: height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 0;
+      }
+      .proj-card:hover::after { height: 100%; }
+      .proj-card:hover .proj-title,
+      .proj-card:hover .proj-desc,
+      .proj-card:hover .proj-tag { color: var(--white); }
+      .proj-card:hover .proj-num { color: var(--red); }
+
+      .proj-num {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 3.5rem;
+        color: var(--light-gray);
+        line-height: 1;
+        margin-bottom: 40px;
+        position: relative; z-index: 1;
+        transition: color 0.3s;
+      }
+      .proj-title {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: 1.4rem;
+        letter-spacing: 2px;
+        color: var(--black);
+        margin-bottom: 12px;
+        position: relative; z-index: 1;
+        transition: color 0.3s;
+      }
+      .proj-desc {
+        font-size: 0.75rem;
+        color: #555;
+        line-height: 1.8;
+        margin-bottom: 24px;
+        position: relative; z-index: 1;
+        transition: color 0.3s;
+      }
+      .proj-tags {
+        display: flex; gap: 8px; flex-wrap: wrap;
+        position: relative; z-index: 1;
+      }
+      .proj-tag {
+        font-size: 0.6rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border: 1px solid var(--light-gray);
+        color: var(--gray);
+        transition: color 0.3s, border-color 0.3s;
+      }
+      .proj-card:hover .proj-tag { border-color: #555; }
+
+      /* ── SKILLS ── */
+      #skills { border-bottom: 1px solid var(--black); }
+
+      .skills-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0;
+      }
+
+      .skill-group {
+        padding: 40px 40px 40px 0;
+        border-right: 1px solid var(--light-gray);
+      }
+      .skill-group:last-child { border-right: none; }
+
+      .sg-title {
+        font-size: 0.6rem;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: var(--red);
+        margin-bottom: 24px;
+      }
+      .sg-items {
+        list-style: none;
+        font-size: 0.8rem;
+        line-height: 2.2;
+        color: var(--black);
+      }
+      .sg-items li { border-bottom: 1px solid var(--light-gray); padding-bottom: 4px; }
+      .sg-items li:last-child { border-bottom: none; }
+
+      /* ── CONTACT ── */
+
+      .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 120px;
+        align-items: end;
+      }
+
+      .contact-cta {
+        font-family: 'Bebas Neue', sans-serif;
+        font-size: clamp(3.5rem, 8vw, 9rem);
+        line-height: 0.9;
+        letter-spacing: 2px;
+      }
+      .contact-cta em {
+        color: var(--red);
+        font-style: normal;
+        display: block;
+      }
+
+      .contact-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0;
+        border-top: 1px solid var(--light-gray);
+        font-size: 0.75rem;
+        letter-spacing: 2px;
+      }
+      .contact-row:last-child { border-bottom: 1px solid var(--light-gray); }
+      .contact-row .label {
+        color: var(--gray);
+        text-transform: uppercase;
+        font-size: 0.6rem;
+        letter-spacing: 3px;
+      }
+      .contact-row a {
+        color: var(--black);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .contact-row a:hover { color: var(--red); }
+
+      /* ── footer ── */
+      footer {
+        border-top: 1px solid var(--black);
+        padding: 28px 60px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.6rem;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: var(--gray);
+      }
+
+      /* ── mobile ── */
+      @media (max-width: 768px) {
+        section { padding: 100px 24px 80px; }
+        nav { padding: 24px; }
+        nav ul { display: none; }
+        .about-grid, .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+        .projects-grid { grid-template-columns: 1fr; }
+        .skills-grid { grid-template-columns: 1fr; }
+        .exp-item { grid-template-columns: 1fr; gap: 12px; }
+        footer { padding: 24px; flex-direction: column; gap: 12px; text-align: center; }
+      }
+
+      /* scrollbar */
+      ::-webkit-scrollbar { width: 3px; }
+      ::-webkit-scrollbar-track { background: var(--white); }
+      ::-webkit-scrollbar-thumb { background: var(--black); }
+    </style>
+
+  </head>
+  <body>
+
+    <div id="progress"></div>
+    <div id="cur"></div>
+
+    <!-- Nav -->
+
+    <nav>
+      <a href="#hero" class="logo">R<em>.</em>Shah</a>
+      <ul>
+        <li><a href="#about">About</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#contact">Contact</a></li>
+        <li><a href="https://github.com/Rooshshah123" target="_blank" rel="noopener">GitHub ↗</a></li>
+      </ul>
+    </nav>
+
+    <!-- HERO -->
+
+    <section id="hero">
+      <div class="hero-main">
+        <div class="hero-name">
+          <span class="line">ROOSH</span>
+          <span class="line">SHAH</span>
+        </div>
+      </div>
+      <div class="hero-footer">
+        <div class="hero-meta">
+          <strong>Role</strong>
+          Electronics & Instrumentation Engineer<br>
+          Minor — Cyber-Physical Systems
+        </div>
+        <div class="hero-meta">
+          <strong>Currently</strong>
+          Embedded Intern<br>
+          Sixth Energy Technology, Bangalore
+        </div>
+        <div class="hero-meta">
+          <strong>Contact</strong>
+          <a href="mailto:rooshshah001@gmail.com">rooshshah001@gmail.com</a><br>
+          +91 8160479449
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+
+    <section id="about">
+      <div class="s-header reveal">
+        <div class="s-title">About</div>
+        <div class="s-num">01 / 05</div>
+      </div>
+      <div class="about-grid">
+        <div class="about-sidebar reveal">
+          <div class="sidebar-block">
+            <div class="sidebar-label">Education</div>
+            <div class="sidebar-val">B.Tech — Electronics &amp; Instrumentation<br>Nirma University<br>Expected Aug 2026 · 7.3 CGPA</div>
+          </div>
+          <div class="sidebar-block">
+            <div class="sidebar-label">Specialisation</div>
+            <div class="sidebar-val">Minor in Cyber-Physical Systems</div>
+          </div>
+          <div class="sidebar-block">
+            <div class="sidebar-label">Leadership</div>
+            <div class="sidebar-val">VP — Indian Society for Technical Education (ISTE)<br>Jan 2025 – Jan 2026</div>
+          </div>
+        </div>
+        <div class="about-body reveal" style="transition-delay:0.15s">
+          <p>Electronics and Instrumentation Engineer with a sharp focus on <em>embedded firmware</em>, <em>IoT automation</em>, and hardware design. I work at the boundary where silicon meets software — making sensors talk to microcontrollers in real time.</p>
+          <p>Currently building thermal imaging pipelines and sensor fusion systems at Sixth Energy Technology in Bangalore. Comfortable with the full stack from schematic design in KiCad to bare-metal C firmware and production deployment.</p>
+          <p>Fluent in <em>UART, SPI, I²C, and CAN</em>. Obsessed with systems that are correct, fast, and reliable — in that order.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- EXPERIENCE -->
+
+    <section id="experience">
+      <div class="s-header reveal">
+        <div class="s-title">Experience</div>
+        <div class="s-num">02 / 05</div>
+      </div>
+
+      <div class="exp-item reveal">
+        <div class="exp-period">
+          <span class="company">Sixth Energy Technology</span>
+          Jan 2026 – Present<br>Bangalore, India
+        </div>
+        <div class="exp-content">
+          <div class="exp-role">Embedded Intern</div>
+          <ul class="exp-bullets">
+            <li>Integrated microcontrollers with visible-light and FLIR Lepton LWIR thermal cameras — real-time image acquisition via SPI/I²C.</li>
+            <li>Designed and simulated circuits in KiCad and OrCAD, cutting prototyping errors by 20% through iterative testing.</li>
+            <li>Developed firmware for sensor interfacing and data processing pipelines supporting thermal mapping and object detection across 5+ use cases.</li>
+            <li>Collaborated with R&D to optimise hardware-software integrations — 99% uptime in deployment-ready solutions.</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="exp-item reveal" style="transition-delay:0.1s">
+        <div class="exp-period">
+          <span class="company">Aktiv Software</span>
+          May 2025 – Jul 2025<br>India
+        </div>
+        <div class="exp-content">
+          <div class="exp-role">Software Developer Intern</div>
+          <ul class="exp-bullets">
+            <li>Customised Odoo modules in Python, XML, and PostgreSQL for CRM, Inventory, Sales, Purchase, and Manufacturing across 10+ clients.</li>
+            <li>Configured automated workflows, mail templates, and SQL/Python constraints — 30% improvement in process efficiency.</li>
+            <li>Managed multiple Odoo instances with Git and virtual environments for parallel development.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+
+    <section id="projects">
+      <div class="s-header reveal">
+        <div class="s-title">Projects</div>
+        <div class="s-num">03 / 05</div>
+      </div>
+      <div class="projects-grid">
+        <a class="proj-card reveal" href="https://github.com/Rooshshah123/Digital-Twin" target="_blank" rel="noopener">
+          <div class="proj-num">01</div>
+          <div class="proj-title">Digital Twin — Building Energy Management</div>
+          <div class="proj-desc">Preprocessed real-world smart home energy data, trained predictive models for consumption estimation at 85% accuracy. Developed anomaly detection for equipment malfunction alerts.</div>
+          <div class="proj-tags">
+            <span class="proj-tag">Python</span>
+            <span class="proj-tag">ML</span>
+            <span class="proj-tag">CSV</span>
+            <span class="proj-tag">Anomaly Detection</span>
+          </div>
+          <div class="proj-link">View on GitHub &rarr;</div>
+        </a>
+        <a class="proj-card reveal" href="https://github.com/Rooshshah123/Dht11" target="_blank" rel="noopener" style="transition-delay:0.1s">
+          <div class="proj-num">02</div>
+          <div class="proj-title">IoT Temperature & Humidity Monitor</div>
+          <div class="proj-desc">Built a real-time environmental monitoring system using ESP32, DHT11 sensor, and 16×2 I²C LCD. Implemented sensor communication and error-handling logic for industrial reliability.</div>
+          <div class="proj-tags">
+            <span class="proj-tag">ESP32</span>
+            <span class="proj-tag">C++</span>
+            <span class="proj-tag">I²C</span>
+            <span class="proj-tag">Arduino</span>
+          </div>
+          <div class="proj-link">View on GitHub &rarr;</div>
+        </a>
+        <a class="proj-card reveal" href="https://github.com/Rooshshah123/FuzzyLogicResearch" target="_blank" rel="noopener" style="transition-delay:0.15s">
+          <div class="proj-num">03</div>
+          <div class="proj-title">Fuzzy Logic Research</div>
+          <div class="proj-desc">Research and implementation of fuzzy logic control systems — exploring soft-computing approaches for real-world sensor and control applications.</div>
+          <div class="proj-tags">
+            <span class="proj-tag">Fuzzy Logic</span>
+            <span class="proj-tag">Control Systems</span>
+            <span class="proj-tag">Research</span>
+          </div>
+          <div class="proj-link">View on GitHub &rarr;</div>
+        </a>
+        <div class="proj-card reveal" style="transition-delay:0.2s">
+          <div class="proj-num">04</div>
+          <div class="proj-title">Thermal Vision Core</div>
+          <div class="proj-desc">FLIR Lepton 3.5 integration on Renesas RA6M3 via VoSPI. Full frame sync, VSYNC via CCI/I²C, manual GPIO CS control to bypass hardware SSL auto-toggle.</div>
+          <div class="proj-tags">
+            <span class="proj-tag">Embedded C</span>
+            <span class="proj-tag">SPI</span>
+            <span class="proj-tag">Renesas RA6M3</span>
+            <span class="proj-tag">FLIR</span>
+          </div>
+          <div class="proj-link" style="color:var(--gray);opacity:0.5;">Private Repo</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+
+    <section id="skills">
+      <div class="s-header reveal">
+        <div class="s-title">Skills</div>
+        <div class="s-num">04 / 05</div>
+      </div>
+      <div class="skills-grid reveal">
+        <div class="skill-group">
+          <div class="sg-title">Hardware & EDA</div>
+          <ul class="sg-items">
+            <li>KiCad</li>
+            <li>OrCAD</li>
+            <li>Schematic Design</li>
+            <li>PCB Layout</li>
+            <li>Circuit Design</li>
+          </ul>
+        </div>
+        <div class="skill-group">
+          <div class="sg-title">Embedded & Protocols</div>
+          <ul class="sg-items">
+            <li>Embedded C / C++</li>
+            <li>RTOS Fundamentals</li>
+            <li>UART / SPI / I²C / CAN</li>
+            <li>Firmware Development</li>
+            <li>Microcontroller Integration</li>
+          </ul>
+        </div>
+        <div class="skill-group">
+          <div class="sg-title">Software & Tools</div>
+          <ul class="sg-items">
+            <li>Python · SQL · MATLAB</li>
+            <li>LabVIEW · Arduino</li>
+            <li>n8n Workflow Automation</li>
+            <li>Odoo · Git · PostgreSQL</li>
+            <li>Scikit-learn · NumPy</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+
+    <section id="contact">
+      <div class="s-header reveal">
+        <div class="s-title">Contact</div>
+        <div class="s-num">05 / 05</div>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-cta reveal">
+          LET'S<br>BUILD<br><em>TOGETHER.</em>
+        </div>
+        <div class="contact-details reveal" style="transition-delay:0.15s">
+          <div class="contact-row">
+            <span class="label">Email</span>
+            <a href="mailto:rooshshah001@gmail.com">rooshshah001@gmail.com</a>
+          </div>
+          <div class="contact-row">
+            <span class="label">Phone</span>
+            <a href="tel:+918160479449">+91 8160479449</a>
+          </div>
+          <div class="contact-row">
+            <span class="label">LinkedIn</span>
+            <a href="https://www.linkedin.com/in/roosh-shah">linkedin.com/in/roosh-shah</a>
+          </div>
+          <div class="contact-row">
+            <span class="label">GitHub</span>
+            <a href="https://github.com/Rooshshah123" target="_blank" rel="noopener">github.com/Rooshshah123</a>
+          </div>
+          <div class="contact-row">
+            <span class="label">Location</span>
+            <span>Ahmedabad / Bangalore, India</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+
+    <footer>
+      <span>© 2026 Roosh Shah</span>
+      <span style="color: var(--red)">rooshshah001@gmail.com</span>
+      <span>Available for opportunities</span>
+    </footer>
+
+    <script>
+      /* cursor */
+      const cur = document.getElementById('cur');
+      let mx = 0, my = 0;
+      document.addEventListener('mousemove', e => {
+        mx = e.clientX; my = e.clientY;
+        cur.style.left = (mx - 5) + 'px';
+        cur.style.top = (my - 5) + 'px';
+      });
+      document.querySelectorAll('a, .proj-card').forEach(el => {
+        el.addEventListener('mouseenter', () => cur.classList.add('big'));
+        el.addEventListener('mouseleave', () => cur.classList.remove('big'));
+      });
+
+      /* scroll progress */
+      const bar = document.getElementById('progress');
+      window.addEventListener('scroll', () => {
+        const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+        bar.style.width = pct + '%';
+      });
+
+      /* reveal on scroll */
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('on'); obs.unobserve(e.target); } });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+    </script>
+
+  </body>
+</html>
